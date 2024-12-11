@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
+
+    body {
+      margin:0;
+      background-color:rgb(122, 84, 226);
+      background-image: url('./assets/Hero-Background-notecode@2x.png');
+      background-repeat: no-repeat;
+      background-size: cover;
+      margin:30px 0 100px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-family: 'Outfit', sans-serif;
+    }
+    html,body {
+      height:100%;
+    }
+
+    h2 {
+      font-size: 28px;
+      font-weight: 600;
+      margin-top:30px;
+    }
+    h1 {
+      font-size: 36px;
+      font-weight: 600;
+      margin-top:-10px;
+    }
+
+    .card {
+      background-color: white;
+      border-radius: 10px;
+      /* border:1px solid red; */
+      width:50%;
+      height:463px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .editor {
+      margin:20px 0;
+      /* border:1px solid green; */
+      height:80%;
+    }
+    .buttons {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding:10px;
+    }
+    .buttons > div {
+      display: flex;
+      align-items: center;
+      gap:10px;
+    }
+    .buttons select {
+      border:none;
+      border-radius:50px;
+      padding:5px 10px;
+      font-size: 10px;
+      cursor: pointer;
+      font-family: 'Outfit', sans-serif;
+    }
+    .copy {
+      border:none;
+      background:none;
+      font-family: 'Outfit', sans-serif;
+      font-size: 12px;
+      color: #364153;
+      font-weight: 400;
+      display: flex;
+      align-items: center;
+      gap:10px;
+      cursor: pointer;
+    }
+    .share {
+      background-color: #406AFF;
+      border:none;
+      font-family: 'Outfit', sans-serif;
+      font-size: 16px;
+      color:white;
+      border-radius:50px;
+      display: flex;
+      align-items: center;
+      gap:10px;
+      padding:10px 20px;
+      cursor: pointer;
+    }
+    .share.disabled {
+      background-color:#779;
+      cursor: default;
+    }
+    .hidden {
+      display: none;
+    }
+  </style>
+  <script src="monaco-editor/min/vs/loader.js"></script>
+  <script>
+    var editor;
+    var data = [];
+
+    window.onload = function() {
+      
+      require.config({ paths: { vs: 'monaco-editor/min/vs' } });
+      require(['vs/editor/editor.main'], function () {
+        editor = monaco.editor.create(document.querySelector('.editor'), {
+          value: `// First line\nfunction hello() {\n\talert('Hello world!');\n}\n// Last line`,
+          language: 'javascript',
+          theme: "vs-dark",
+          scrollBeyondLastLine: false,
+        });
+      });
+
+      document.querySelector('.lang').addEventListener('change', function(e) {
+        editor.updateOptions({
+          language: e.target.value.toString()
+        });
+        
+      });
+      document.querySelector('.theme').addEventListener('change', function(e) {
+        editor.updateOptions({
+          theme: e.target.value
+        });
+      });
+
+      var share = document.querySelector('.share');
+      var copy = document.querySelector('.copy')
+      share.addEventListener('click', function(e) {
+        var id = generateID();
+      });
+    }
+
+    function generateID() {
+      var highestID = 0;
+      data.forEach(code => {
+        if (code.id > highestID) {
+          highestID = code.id;
+        }
+      });
+      
+      var newID = highestID++;
+      var newCode = {
+        id: newID,
+        code: editor.getValue()
+      }
+      data.push(newCode);
+      
+      document.querySelector('.share').classList.add('disabled');
+      
+      document.querySelector('.copy span').innerText = `../${newID}`;
+      document.querySelector('.copy').classList.remove('hidden');
+    }
+  </script>
+</head>
+<body>
+
+  <img src="./assets/NoteCodeLogo.svg">
+  <h2>Create & Share</h2>
+  <h1>Your Code easily</h1>
+
+  <div class="card">
+    <div class="editor"></div>
+    <div class="buttons">
+      <div>
+        <select class="lang">
+          <option value="javascript">JS</option>
+          <option value="html" selected>HTML</option>
+        </select>
+        <select class="theme">
+          <option value="vs-dark">Dark</option>
+          <option value="vs-light">Light</option>
+        </select>
+      </div>
+      <div>
+        <button class="copy hidden"><img src="./assets/link.svg"><span></span></button>
+        <button class="share"><img src="./assets/Share.svg">Share</button>
+      </div>
+    </div>
+  </div>
+  
+</body>
+</html>
